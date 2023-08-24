@@ -111,7 +111,7 @@ Send a post request with a json of the values to set to `localhost:53510/api/pos
 ## Getting a specific overlay
 `localhost:53510/api/getOverlay?name=[OverlayName]` will redirect you to the Overlay you specified if it exists.
 
-## Downloading an overlay
+## Downloading overlays
 Make a post request to `localhost:53510/api/download` with a json. e. g.
 ```json
 {
