@@ -1,0 +1,53 @@
+name: Build Windows with dispatch
+
+on: 
+  workflow_dispatch:
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+        
+      - name: Get version
+        id: getversion
+        run: echo "::set-output name=v::$(node -p "require('./package.json').version")"
+        
+      - name: Display version
+        run: echo ${{ steps.getversion.outputs.v }}
+
+      - name: Install modules
+        run: npm i
+        
+      - name: Build windows binary
+        run: npm run dist
+        
+      - name: package to zip
+        uses: vimtor/action-zip@v1
+        with:
+          files: ./build/win-unpacked
+          dest: ./build/streamer-tools-client.zip
+        
+      - name: Upload windows portable
+        uses: actions/upload-artifact@v2
+        with:
+          name: streamer-tools-client_win.zip
+          path: ./build/streamer-tools-client.zip
+          if-no-files-found: error
+
+      - name: Upload windows installer
+        uses: actions/upload-artifact@v2
+        with:
+          name: streamer-tools-client_win_installer.exe
+          path: ./build/streamer-tools-client Setup ${{ steps.getversion.outputs.v }}.exe
+          if-no-files-found: error
